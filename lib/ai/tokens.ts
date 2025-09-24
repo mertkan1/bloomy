@@ -25,4 +25,12 @@ export async function upsertDailyMessage(orderId: string, dayIndex: number, cont
   if (error) throw error
 }
 
+export async function logAiEvent(orderId: string, kind: 'generate' | 'regenerate', tokens: number = 1) {
+  const supabase = createSupabaseServerClient()
+  const { error } = await supabase
+    .from('ai_events')
+    .insert({ order_id: orderId, kind, tokens })
+  if (error) throw error
+}
+
 
