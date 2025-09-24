@@ -1,5 +1,6 @@
 import GiftViewPage from '@/components/GiftViewPage'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
+import type { Metadata } from 'next'
 
 export default async function GiftPage({ params }: { params: { code: string } }) {
   const supabase = createSupabaseServerClient()
@@ -22,6 +23,22 @@ export default async function GiftPage({ params }: { params: { code: string } })
       <GiftViewPage />
     </main>
   )
+}
+
+export async function generateMetadata({ params }: { params: { code: string } }): Promise<Metadata> {
+  const base = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+  const title = 'Blooomy – Dijital Çiçek'
+  const description = 'Günlük AI mesajlarla kişiye özel hediye sayfası'
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url: `${base}/gift/${params.code}`,
+      images: [{ url: `${base}/og/${params.code}` }],
+    },
+  }
 }
 
 
