@@ -16,8 +16,8 @@ interface Flower {
 }
 
 interface SelectFlowerProps {
-  onBack: () => void;
-  onSelectFlower: (flower: Flower) => void;
+  onBack?: () => void;
+  onSelectFlower?: (flower: Flower) => void;
 }
 
 const flowers = {
@@ -138,7 +138,7 @@ export default function SelectFlower({ onBack, onSelectFlower }: SelectFlowerPro
         
         <nav className="flex items-center gap-8">
           <button 
-            onClick={onBack}
+            onClick={() => onBack?.()}
             className="text-[#6B7280] hover:text-[#111827] transition-colors"
           >
             Home
@@ -197,7 +197,7 @@ export default function SelectFlower({ onBack, onSelectFlower }: SelectFlowerPro
                 
                 <div 
                   className="relative bg-gradient-to-br from-gray-100 to-gray-300 rounded-3xl overflow-hidden cursor-pointer group aspect-[4/3] shadow-xl"
-                  onClick={() => onSelectFlower(limitedFlower)}
+                  onClick={() => onSelectFlower?.(limitedFlower)}
                   onMouseEnter={() => setIsVideoPlaying(prev => ({ ...prev, limited: true }))}
                   onMouseLeave={() => setIsVideoPlaying(prev => ({ ...prev, limited: false }))}
                 >
@@ -238,7 +238,7 @@ export default function SelectFlower({ onBack, onSelectFlower }: SelectFlowerPro
               <div className="space-y-4">
                 <div 
                   className="relative bg-gradient-to-br from-gray-100 to-gray-300 rounded-3xl overflow-hidden cursor-pointer group aspect-[4/3] shadow-lg"
-                  onClick={() => onSelectFlower(currentStandardFlower)}
+                  onClick={() => onSelectFlower?.(currentStandardFlower)}
                   onMouseEnter={() => setIsVideoPlaying(prev => ({ ...prev, standard: true }))}
                   onMouseLeave={() => setIsVideoPlaying(prev => ({ ...prev, standard: false }))}
                 >

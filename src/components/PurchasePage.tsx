@@ -132,49 +132,22 @@ export default function PurchasePage({ giftData, onBack, onProceedToPayment }: P
   };
 
   const handlePayment = async () => {
-    if (!cardNumber || !expiryDate || !cvv || !cardholderName) {
-      toast.error('Please fill in all payment details');
-      return;
-    }
-
     setIsProcessing(true);
-    
     try {
-      const purchaseData = {
-        giftData: {
-          ...giftData,
-          recipientEmail,
-          deliveryDate: getDeliveryDateString(),
-          recipientName: giftData?.recipientName || 'Friend',
-          senderName: giftData?.senderName || 'Your Secret Admirer'
-        },
-        plan: selectedPlan,
-        price: plans.find(p => p.id === selectedPlan)?.price,
-      };
-
-      console.log('Demo mode: Simulating payment with data:', purchaseData);
-
-      // Simulate payment processing
-      toast.success('Processing payment...');
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      // Generate demo gift ID
-      const giftId = `demo_gift_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
-      const paymentIntentId = `demo_pi_${Date.now()}`;
-      
-      console.log('Demo payment successful. Gift created:', giftId);
-      toast.success('Payment successful! Creating your gift...');
-
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      toast.success('Gift created successfully!');
-      
-      // Proceed to success page
-      onProceedToPayment({
-        ...purchaseData,
-        paymentIntentId,
-        giftId
+      const planKey = selectedPlan === '30' ? '30d' : '365d';
+      const res = await fetch('/api/payments/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          plan: planKey,
+          successUrl: `${location.origin}/my-flowers`,
+          cancelUrl: `${location.origin}/(flow)/checkout`,
+          flowerId: giftData?.flower?.id,
+        }),
       });
-
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || 'Checkout failed');
+      window.location.href = data.url;
     } catch (error) {
       console.error('Payment error:', error);
       const errorMessage = error instanceof Error ? error.message : 'Payment failed. Please try again.';
