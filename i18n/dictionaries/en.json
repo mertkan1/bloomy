@@ -2,7 +2,9 @@
   "nav.myFlowers": "My flowers",
   "nav.login": "Login",
   "home.title": "Blooomy",
-  "home.subtitle": "Start the digital flower gift flow"
+  "home.subtitle": "Start the digital flower gift flow",
+  "gift.title": "Your digital flower",
+  "gift.description": "A personal gift page with daily AI messages"
 }
 
 
