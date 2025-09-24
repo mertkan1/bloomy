@@ -3,11 +3,7 @@ import Stripe from 'stripe'
 import { PLAN_TO_TOKENS } from '@/lib/payments/plans'
 import { createSupabaseAdminClient } from '@/lib/supabase/admin'
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-}
+export const runtime = 'nodejs'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', { apiVersion: '2024-06-20' })
 
