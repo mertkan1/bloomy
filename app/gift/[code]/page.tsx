@@ -20,7 +20,7 @@ export default async function GiftPage({ params }: { params: { code: string } })
 
   return (
     <main className="min-h-screen">
-      <GiftViewPage />
+      <GiftViewPage order={order} messages={messages || []} />
     </main>
   )
 }

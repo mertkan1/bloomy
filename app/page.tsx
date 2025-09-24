@@ -1,9 +1,14 @@
+import { cookies } from 'next/headers'
+import { getDictionary, type Locale } from '@/i18n'
+
 export default function HomePage() {
+  const locale = (cookies().get('lang')?.value as Locale) || 'tr'
+  const dict = getDictionary(locale)
   return (
     <main className="min-h-screen flex items-center justify-center">
       <div className="text-center space-y-4">
-        <h1 className="text-3xl font-semibold">Blooomy</h1>
-        <p className="text-muted-foreground">Dijital çiçek hediye akışını başlat.</p>
+        <h1 className="text-3xl font-semibold">{dict['home.title']}</h1>
+        <p className="text-muted-foreground">{dict['home.subtitle']}</p>
         <div className="flex items-center gap-4 justify-center">
           <a className="underline" href="/(flow)/select-flower">Çiçek seç</a>
           <a className="underline" href="/(flow)/message">Mesaj</a>
