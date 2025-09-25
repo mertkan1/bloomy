@@ -7,12 +7,8 @@ import { Badge } from './ui/badge';
 import { Avatar } from './ui/avatar';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { Heart, Eye, QrCode, Send, Settings, LogOut, Calendar, Gift, Loader2, User } from 'lucide-react';
-import { projectId, publicAnonKey } from '../utils/supabase/info';
-import { toast } from 'sonner@2.0.3';
-import exampleImage from 'figma:asset/969996e8b243f236bb6f845a9c42171cf3e03bb0.png';
-import flowerLogo from 'figma:asset/b2dfc7a842334267c53e217f862d55a3f4d30a90.png';
-import flowerLogoGradient from 'figma:asset/47650059587febef5d2ffcbe8595697331a8c807.png';
-import flowerLogoOutline from 'figma:asset/7f2e338b7c49e282790a86d9a96a4f9a2abdd1f2.png';
+import { toast } from 'sonner';
+import flowerLogoOutline from '@/assets/7f2e338b7c49e282790a86d9a96a4f9a2abdd1f2.png';
 
 interface MyFlowersProps {
   userEmail?: string;

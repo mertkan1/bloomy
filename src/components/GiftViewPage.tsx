@@ -4,13 +4,12 @@ import { Button } from './ui/button';
 import { Card } from './ui/card';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { Heart, Calendar, ArrowLeft, ChevronLeft, ChevronRight, History, Gift, Play, Pause } from 'lucide-react';
-import { projectId, publicAnonKey } from '../utils/supabase/info';
 import ConfettiEffect from './ConfettiEffect';
-import exampleImage from 'figma:asset/8ad8897c666027e964120ebef5888d4b6b9585c7.png';
-import whiteFlowerIcon from 'figma:asset/5475b1411dea4e76a005dd69e4f4fca7bc3fafe7.png';
-import flowerLogo from 'figma:asset/b2dfc7a842334267c53e217f862d55a3f4d30a90.png';
-import flowerLogoGradient from 'figma:asset/47650059587febef5d2ffcbe8595697331a8c807.png';
-import flowerLogoOutline from 'figma:asset/7f2e338b7c49e282790a86d9a96a4f9a2abdd1f2.png';
+import exampleImage from '@/assets/8ad8897c666027e964120ebef5888d4b6b9585c7.png';
+import whiteFlowerIcon from '@/assets/5475b1411dea4e76a005dd69e4f4fca7bc3fafe7.png';
+import flowerLogo from '@/assets/b2dfc7a842334267c53e217f862d55a3f4d30a90.png';
+import flowerLogoGradient from '@/assets/47650059587febef5d2ffcbe8595697331a8c807.png';
+import flowerLogoOutline from '@/assets/7f2e338b7c49e282790a86d9a96a4f9a2abdd1f2.png';
 
 interface GiftViewPageProps {
   giftId: string;
