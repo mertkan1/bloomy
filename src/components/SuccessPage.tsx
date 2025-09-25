@@ -3,7 +3,7 @@ import { motion } from 'motion/react';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
 import { Heart, Download, Copy, Share, CheckCircle, QrCode, Edit3 } from 'lucide-react';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 
 interface SuccessPageProps {
   purchaseData: any;

@@ -6,7 +6,7 @@ import { Label } from './ui/label';
 import { Card } from './ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Heart, Check, Calendar, Mail, ArrowLeft, CreditCard, Lock } from 'lucide-react';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
 
 interface PurchasePageProps {

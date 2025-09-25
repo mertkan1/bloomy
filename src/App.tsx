@@ -20,7 +20,7 @@ import MyFlowers from './components/MyFlowers';
 import { Heart, Sparkles, MessageCircle, Share2, Globe, ChevronDown, User, LogIn, LogOut, Loader2 } from 'lucide-react';
 import { createClient } from '@supabase/supabase-js';
 import { projectId, publicAnonKey } from './utils/supabase/info';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 import flowerLogo from 'figma:asset/b2dfc7a842334267c53e217f862d55a3f4d30a90.png';
 import flowerLogoGradient from 'figma:asset/47650059587febef5d2ffcbe8595697331a8c807.png';
 import flowerLogoOutline from 'figma:asset/7f2e338b7c49e282790a86d9a96a4f9a2abdd1f2.png';
