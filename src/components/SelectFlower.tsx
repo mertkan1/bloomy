@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useEffect } from 'react';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
@@ -20,7 +22,10 @@ interface SelectFlowerProps {
   onSelectFlower?: (flower: Flower) => void;
 }
 
-const flowers = {
+const flowerCategories = ['romantic', 'motivation', 'friendship', 'celebration'] as const;
+type FlowerCategory = (typeof flowerCategories)[number];
+
+const flowers: Record<FlowerCategory, Flower[]> = {
   romantic: [
     {
       id: 'elegant-bouquet',
@@ -94,15 +99,15 @@ const flowers = {
       price: 27.99,
       image: 'https://images.unsplash.com/photo-1660585468452-514ed1977f77?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxyZWQlMjBjcmltc29uJTIwcm9zZSUyMGZsb3dlcnxlbnwxfHx8fDE3NTc4NzgyMTd8MA&ixlib=rb-4.1.0&q=80&w=1080'
     }
-  ]
+  ],
 };
 
 export default function SelectFlower({ onBack, onSelectFlower }: SelectFlowerProps) {
-  const [activeCategory, setActiveCategory] = useState<keyof typeof flowers>('romantic');
+  const [activeCategory, setActiveCategory] = useState<FlowerCategory>('romantic');
   const [currentStandardIndex, setCurrentStandardIndex] = useState(1);
   const [isVideoPlaying, setIsVideoPlaying] = useState({ limited: false, standard: false });
 
-  const categories = [
+  const categories: Array<{ id: FlowerCategory; label: string }> = [
     { id: 'romantic', label: 'Romantic' },
     { id: 'motivation', label: 'Motivation' },
     { id: 'friendship', label: 'Friendship' },
