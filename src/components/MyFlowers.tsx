@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Button } from './ui/button';
@@ -7,19 +9,18 @@ import { Badge } from './ui/badge';
 import { Avatar } from './ui/avatar';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { Heart, Eye, QrCode, Send, Settings, LogOut, Calendar, Gift, Loader2, User } from 'lucide-react';
-import { projectId, publicAnonKey } from '../utils/supabase/info';
-import { toast } from 'sonner@2.0.3';
-import exampleImage from 'figma:asset/969996e8b243f236bb6f845a9c42171cf3e03bb0.png';
-import flowerLogo from 'figma:asset/b2dfc7a842334267c53e217f862d55a3f4d30a90.png';
-import flowerLogoGradient from 'figma:asset/47650059587febef5d2ffcbe8595697331a8c807.png';
-import flowerLogoOutline from 'figma:asset/7f2e338b7c49e282790a86d9a96a4f9a2abdd1f2.png';
+import { toast } from 'sonner';
+import flowerLogoOutline from '@/assets/7f2e338b7c49e282790a86d9a96a4f9a2abdd1f2.png';
+
+const flowerLogoOutlineSrc =
+  typeof flowerLogoOutline === 'string' ? flowerLogoOutline : flowerLogoOutline.src;
 
 interface MyFlowersProps {
   userEmail?: string;
-  onLogout: () => void;
-  onViewGift: (giftId: string) => void;
-  onHome: () => void;
-  onSendGift: () => void;
+  onLogout?: () => void;
+  onViewGift?: (giftId: string) => void;
+  onHome?: () => void;
+  onSendGift?: () => void;
   user?: any;
 }
 
@@ -40,7 +41,7 @@ interface GiftItem {
   deliveryDate: string;
 }
 
-export default function MyFlowers({ userEmail, onLogout, onViewGift, onHome, onSendGift, user }: MyFlowersProps) {
+export default function MyFlowers({ userEmail, onLogout, onViewGift, onHome, onSendGift, user }: MyFlowersProps = {}) {
   const [gifts, setGifts] = useState<GiftItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -204,20 +205,20 @@ export default function MyFlowers({ userEmail, onLogout, onViewGift, onHome, onS
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-gradient-to-r from-[#FF7AA2] to-[#FF9E66] rounded-lg flex items-center justify-center">
-              <img src={flowerLogoOutline} alt="Bloomy" className="w-5 h-5 object-contain brightness-0 invert" />
+              <img src={flowerLogoOutlineSrc} alt="Bloomy" className="w-5 h-5 object-contain brightness-0 invert" />
             </div>
             <span className="text-2xl font-bold text-[#111827]">Bloomy</span>
           </div>
           
           <nav className="hidden md:flex items-center gap-8">
             <button 
-              onClick={onHome}
+              onClick={() => onHome?.()}
               className="text-[#6B7280] hover:text-[#111827] transition-colors"
             >
               Home
             </button>
             <button 
-              onClick={onSendGift}
+              onClick={() => onSendGift?.()}
               className="text-[#6B7280] hover:text-[#111827] transition-colors"
             >
               Send a Gift
@@ -227,7 +228,7 @@ export default function MyFlowers({ userEmail, onLogout, onViewGift, onHome, onS
           
           <div className="flex items-center gap-4">
             <Button
-              onClick={onSendGift}
+              onClick={() => onSendGift?.()}
               size="sm"
               className="bg-gradient-to-r from-[#FF7AA2] to-[#FF9E66] text-white rounded-xl px-4 py-2 hover:shadow-lg transition-all duration-300"
             >
@@ -246,7 +247,7 @@ export default function MyFlowers({ userEmail, onLogout, onViewGift, onHome, onS
                 </Avatar>
                 
                 <Button
-                  onClick={onLogout}
+                  onClick={() => onLogout?.()}
                   variant="ghost"
                   size="sm"
                   className="text-[#6B7280] hover:text-[#111827] transition-colors p-2"
@@ -317,7 +318,7 @@ export default function MyFlowers({ userEmail, onLogout, onViewGift, onHome, onS
                           <h3 className="text-xl font-semibold text-[#111827] mb-2">No active gifts yet</h3>
                           <p className="text-[#6B7280] mb-6">Start creating beautiful digital flower gifts for your loved ones</p>
                           <Button
-                            onClick={onSendGift}
+                            onClick={() => onSendGift?.()}
                             className="bg-gradient-to-r from-[#FF7AA2] to-[#FF9E66] text-white rounded-xl px-6 py-3"
                           >
                             Send Your First Gift
@@ -380,7 +381,7 @@ export default function MyFlowers({ userEmail, onLogout, onViewGift, onHome, onS
                               {/* Actions */}
                               <div className="col-span-3 flex items-center gap-2">
                                 <Button
-                                  onClick={() => onViewGift(gift.id)}
+                                  onClick={() => onViewGift?.(gift.id)}
                                   variant="outline"
                                   size="sm"
                                   className="text-[#6B7280] hover:text-[#111827] border-[#E5E7EB] hover:border-[#FF7AA2] transition-colors"
@@ -486,7 +487,7 @@ export default function MyFlowers({ userEmail, onLogout, onViewGift, onHome, onS
                               {/* Actions */}
                               <div className="col-span-3 flex items-center gap-2">
                                 <Button
-                                  onClick={() => onViewGift(gift.id)}
+                                  onClick={() => onViewGift?.(gift.id)}
                                   variant="outline"
                                   size="sm"
                                   className="text-[#9CA3AF] hover:text-[#6B7280] border-[#E5E7EB] transition-colors"
@@ -496,7 +497,7 @@ export default function MyFlowers({ userEmail, onLogout, onViewGift, onHome, onS
                                 </Button>
                                 
                                 <Button
-                                  onClick={() => onSendGift()}
+                                  onClick={() => onSendGift?.()}
                                   variant="outline"
                                   size="sm"
                                   className="text-[#FF7AA2] hover:text-[#FF9E66] border-[#FF7AA2] transition-colors"

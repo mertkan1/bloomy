@@ -1,87 +1,242 @@
-import { useState, useEffect, useRef } from 'react';
+'use client';
+
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Button } from './ui/button';
-import { Card } from './ui/card';
 import { ImageWithFallback } from './figma/ImageWithFallback';
-import { Heart, Calendar, ArrowLeft, ChevronLeft, ChevronRight, History, Gift, Play, Pause } from 'lucide-react';
-import { projectId, publicAnonKey } from '../utils/supabase/info';
+import { Calendar, ArrowLeft, ChevronLeft, ChevronRight, History, Play, Pause } from 'lucide-react';
 import ConfettiEffect from './ConfettiEffect';
-import exampleImage from 'figma:asset/8ad8897c666027e964120ebef5888d4b6b9585c7.png';
-import whiteFlowerIcon from 'figma:asset/5475b1411dea4e76a005dd69e4f4fca7bc3fafe7.png';
-import flowerLogo from 'figma:asset/b2dfc7a842334267c53e217f862d55a3f4d30a90.png';
-import flowerLogoGradient from 'figma:asset/47650059587febef5d2ffcbe8595697331a8c807.png';
-import flowerLogoOutline from 'figma:asset/7f2e338b7c49e282790a86d9a96a4f9a2abdd1f2.png';
+import exampleImage from '@/assets/8ad8897c666027e964120ebef5888d4b6b9585c7.png';
+import whiteFlowerIcon from '@/assets/5475b1411dea4e76a005dd69e4f4fca7bc3fafe7.png';
+import flowerLogo from '@/assets/b2dfc7a842334267c53e217f862d55a3f4d30a90.png';
+import flowerLogoGradient from '@/assets/47650059587febef5d2ffcbe8595697331a8c807.png';
+import flowerLogoOutline from '@/assets/7f2e338b7c49e282790a86d9a96a4f9a2abdd1f2.png';
+
+const exampleImageSrc = typeof exampleImage === 'string' ? exampleImage : exampleImage.src;
+const whiteFlowerIconSrc = typeof whiteFlowerIcon === 'string' ? whiteFlowerIcon : whiteFlowerIcon.src;
+const flowerLogoSrc = typeof flowerLogo === 'string' ? flowerLogo : flowerLogo.src;
+const flowerLogoGradientSrc = typeof flowerLogoGradient === 'string' ? flowerLogoGradient : flowerLogoGradient.src;
+const flowerLogoOutlineSrc = typeof flowerLogoOutline === 'string' ? flowerLogoOutline : flowerLogoOutline.src;
+
+type GiftMessageInput =
+  | string
+  | {
+      content?: string | null;
+      message?: string | null;
+      body?: string | null;
+      text?: string | null;
+      day_index?: number | null;
+      dayIndex?: number | null;
+    };
+
+type GiftMessage = {
+  content: string;
+  dayIndex: number;
+};
+
+type SupabaseOrder = {
+  id?: string;
+  gift_code?: string | null;
+  plan?: string | null;
+  buyer_name?: string | null;
+  recipient_name?: string | null;
+  theme?: string | null;
+  themes?: string[] | null;
+  song_id?: string | null;
+  status?: string | null;
+  created_at?: string | null;
+  start_date?: string | null;
+  duration_days?: number | null;
+  flower?: {
+    name?: string | null;
+    media_url?: string | null;
+  } | null;
+  flower_name?: string | null;
+  flower_media_url?: string | null;
+  flower_image?: string | null;
+  sender_name?: string | null;
+  [key: string]: unknown;
+};
+
+type GiftData = {
+  id: string;
+  flower: {
+    name: string;
+    image: string;
+  };
+  recipientName: string;
+  senderName: string;
+  startDate: string;
+  duration: number;
+  themes: string[];
+  plan: string;
+  status: string;
+  music?: {
+    track: {
+      name: string;
+      artist: string;
+    };
+  };
+};
 
 interface GiftViewPageProps {
-  giftId: string;
+  giftId?: string;
+  order?: SupabaseOrder | null;
+  messages?: GiftMessageInput[];
   onBack?: () => void;
 }
 
-export default function GiftViewPage({ giftId, onBack }: GiftViewPageProps) {
+export default function GiftViewPage({ giftId, order, messages: initialMessages = [], onBack }: GiftViewPageProps = {}) {
+  const resolvedGiftId = giftId ?? order?.gift_code ?? order?.id ?? 'demo';
+  const normalizedInitialMessages = useMemo(() => {
+    if (!Array.isArray(initialMessages)) return [] as GiftMessage[];
+
+    return initialMessages
+      .map((msg, index) => {
+        if (typeof msg === 'string') {
+          return { content: msg, dayIndex: index + 1 } satisfies GiftMessage;
+        }
+
+        const fallback =
+          (typeof msg?.content === 'string' && msg.content) ||
+          (typeof msg?.message === 'string' && msg.message) ||
+          (typeof msg?.body === 'string' && msg.body) ||
+          (typeof msg?.text === 'string' && msg.text) ||
+          '';
+
+        return { content: fallback, dayIndex: (msg?.day_index ?? msg?.dayIndex ?? index) + 1 } satisfies GiftMessage;
+      })
+      .filter((msg): msg is GiftMessage => Boolean(msg.content?.trim()));
+  }, [initialMessages]);
+  const normalizedInitialMessageStrings = useMemo(
+    () => normalizedInitialMessages.map((msg) => msg.content),
+    [normalizedInitialMessages]
+  );
   const [currentDay, setCurrentDay] = useState(1);
   const [selectedDay, setSelectedDay] = useState(1);
-  const [giftData, setGiftData] = useState<any>(null);
-  const [messages, setMessages] = useState<string[]>([]);
   const [showHistory, setShowHistory] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [hasTriggeredCelebration, setHasTriggeredCelebration] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const derivedGiftData = useMemo<GiftData | null>(() => {
+    if (!order) return null;
+
+    const plan = typeof order.plan === 'string' && order.plan.length > 0 ? order.plan : '30d';
+    const durationFromOrder =
+      typeof order.duration_days === 'number' && order.duration_days > 0
+        ? order.duration_days
+        : plan === '365d'
+        ? 365
+        : 30;
+    const startDate = (() => {
+      if (typeof order.start_date === 'string' && order.start_date) return order.start_date;
+      if (typeof order.created_at === 'string' && order.created_at) {
+        return order.created_at.split('T')[0];
+      }
+      return new Date().toISOString().split('T')[0];
+    })();
+    const flowerName =
+      (order.flower?.name && typeof order.flower.name === 'string' && order.flower.name) ||
+      (typeof order.flower_name === 'string' && order.flower_name) ||
+      'Bloomy Flower';
+    const flowerImage =
+      (order.flower?.media_url && typeof order.flower.media_url === 'string' && order.flower.media_url) ||
+      (typeof order.flower_media_url === 'string' && order.flower_media_url) ||
+      (typeof order.flower_image === 'string' && order.flower_image) ||
+      exampleImageSrc;
+    const senderName =
+      (typeof order.buyer_name === 'string' && order.buyer_name) ||
+      (typeof order.sender_name === 'string' && order.sender_name) ||
+      'Your Secret Admirer';
+    const recipientName =
+      (typeof order.recipient_name === 'string' && order.recipient_name) ||
+      'Elif';
+    const status = (typeof order.status === 'string' && order.status) || 'active';
+    const themes = (() => {
+      if (Array.isArray(order.themes)) {
+        return order.themes.filter((theme): theme is string => typeof theme === 'string');
+      }
+      if (typeof order.theme === 'string' && order.theme.length > 0) {
+        return [order.theme];
+      }
+      return ['romantic'];
+    })();
+
+    const music =
+      typeof order.song_id === 'string' && order.song_id.length > 0
+        ? {
+            track: {
+              name: 'Custom Selection',
+              artist: order.song_id,
+            },
+          }
+        : undefined;
+
+    return {
+      id: resolvedGiftId,
+      flower: {
+        name: flowerName,
+        image: flowerImage,
+      },
+      recipientName,
+      senderName,
+      startDate,
+      duration: Math.max(1, durationFromOrder),
+      themes,
+      plan,
+      status,
+      music,
+    } satisfies GiftData;
+  }, [order, resolvedGiftId]);
+  const [giftData, setGiftData] = useState<GiftData | null>(derivedGiftData);
+  const [messages, setMessages] = useState<string[]>(
+    normalizedInitialMessageStrings.length > 0 ? normalizedInitialMessageStrings : []
+  );
+  const celebrationTimeoutRef = useRef<number | null>(null);
+
+  const scheduleCelebration = useCallback(() => {
+    if (hasTriggeredCelebration) return;
+    if (celebrationTimeoutRef.current) {
+      window.clearTimeout(celebrationTimeoutRef.current);
+    }
+    celebrationTimeoutRef.current = window.setTimeout(() => {
+      setShowConfetti(true);
+      setHasTriggeredCelebration(true);
+    }, 1000);
+  }, [hasTriggeredCelebration]);
 
   useEffect(() => {
-    const fetchGiftData = async () => {
-      // Fetch real gift data based on giftId
-      console.log('Loading gift data for:', giftId);
-      
-      const giftData = {
-        id: giftId,
-        flower: {
-          name: 'Premium Rose Collection',
-          image: exampleImage
-        },
-        recipientName: 'Elif',
-        senderName: 'Your Secret Admirer',
-        startDate: new Date().toISOString().split('T')[0],
-        duration: 30,
-        themes: ['romantic', 'inspirational'],
-        plan: '30',
-        status: 'active',
-        music: {
-          track: {
-            name: 'Eternal Love',
-            artist: 'Florence Symphony'
-          }
-        }
-      };
-
-      setGiftData(giftData);
-      const currentDay = 3;
-      setCurrentDay(currentDay);
-      setSelectedDay(currentDay);
-      generateAllMessages(currentDay, giftData);
-
-      if (!hasTriggeredCelebration) {
-        setTimeout(() => {
-          setShowConfetti(true);
-          setHasTriggeredCelebration(true);
-        }, 1000);
+    return () => {
+      if (celebrationTimeoutRef.current) {
+        window.clearTimeout(celebrationTimeoutRef.current);
       }
     };
+  }, []);
 
-    fetchGiftData();
-  }, [giftId, hasTriggeredCelebration]);
-
-  // Auto-play music when component mounts
   useEffect(() => {
-    if (giftData?.music) {
-      // Simulate playing music after a short delay
-      setTimeout(() => {
-        setIsPlaying(true);
-      }, 2000);
+    if (derivedGiftData) {
+      setGiftData(derivedGiftData);
     }
-  }, [giftData]);
+  }, [derivedGiftData]);
 
-  const generateAllMessages = (totalDays: number, data: any) => {
+  useEffect(() => {
+    if (normalizedInitialMessageStrings.length === 0) {
+      return;
+    }
+
+    const total = normalizedInitialMessageStrings.length;
+    setMessages((prev) => {
+      if (prev.length === total && prev.every((value, index) => value === normalizedInitialMessageStrings[index])) {
+        return prev;
+      }
+      return [...normalizedInitialMessageStrings];
+    });
+    setCurrentDay(Math.max(1, total));
+    setSelectedDay(Math.max(1, total));
+    scheduleCelebration();
+  }, [normalizedInitialMessageStrings, scheduleCelebration]);
+
+  const generateAllMessages = useCallback((totalDays: number, data: GiftData): string[] => {
     const messageTemplates = [
       `Dear ${data.recipientName}, with each passing day, my heart grows fonder of you. This flower blooms as my love does - endlessly and beautifully. You are the sunshine that makes my world brighter.`,
       `My beloved ${data.recipientName}, every sunrise brings new reasons to smile, and you are always at the top of that list. Your presence in my life is a gift I treasure beyond words.`,
@@ -92,23 +247,96 @@ export default function GiftViewPage({ giftId, onBack }: GiftViewPageProps) {
       `My dear ${data.recipientName}, time may pass, but some things remain eternal - like the beauty of this flower and my appreciation for you. You make every day special.`,
       `${data.recipientName}, in the garden of life, you are the most precious bloom. Your presence brings color and joy to every moment we share together.`,
       `Beloved ${data.recipientName}, just as this digital flower defies time, so does my gratitude for having you in my life. You are truly one of a kind.`,
-      `Dear ${data.recipientName}, another day of this beautiful journey together. May this flower remind you that you are loved, valued, and deeply appreciated.`
+      `Dear ${data.recipientName}, another day of this beautiful journey together. May this flower remind you that you are loved, valued, and deeply appreciated.`,
     ];
 
-    const generatedMessages = [];
-    for (let i = 1; i <= totalDays; i++) {
-      const template = messageTemplates[(i - 1) % messageTemplates.length];
+    const generatedMessages: string[] = [];
+    for (let day = 1; day <= totalDays; day += 1) {
+      const template = messageTemplates[(day - 1) % messageTemplates.length];
       const variations = [
         template,
         template.replace('Dear ', 'Hello ').replace('Dearest ', 'My dear '),
         template.replace('My beloved ', 'Sweet ').replace('Sweet ', 'Dear '),
       ];
-      const selectedMessage = variations[i % variations.length];
+      const selectedMessage = variations[day % variations.length];
       generatedMessages.push(selectedMessage);
     }
-    
-    setMessages(generatedMessages);
-  };
+
+    return generatedMessages;
+  }, []);
+
+  useEffect(() => {
+    if (normalizedInitialMessageStrings.length > 0) {
+      return;
+    }
+    if (derivedGiftData) {
+      const simulatedDay = Math.min(derivedGiftData.duration, Math.max(1, Math.ceil(derivedGiftData.duration / 10)));
+      setCurrentDay(simulatedDay);
+      setSelectedDay(simulatedDay);
+      setMessages((prev) => (prev.length > 0 ? prev : generateAllMessages(simulatedDay, derivedGiftData)));
+      scheduleCelebration();
+      return;
+    }
+    if (giftData) {
+      return;
+    }
+
+    let isCancelled = false;
+    const fetchGiftData = async () => {
+      const fallbackGiftData: GiftData = {
+        id: resolvedGiftId,
+        flower: {
+          name: 'Premium Rose Collection',
+          image: exampleImageSrc,
+        },
+        recipientName: 'Elif',
+        senderName: 'Your Secret Admirer',
+        startDate: new Date().toISOString().split('T')[0],
+        duration: 30,
+        themes: ['romantic', 'inspirational'],
+        plan: '30d',
+        status: 'active',
+        music: {
+          track: {
+            name: 'Eternal Love',
+            artist: 'Florence Symphony',
+          },
+        },
+      };
+
+      if (isCancelled) return;
+
+      setGiftData(fallbackGiftData);
+      const simulatedDay = Math.min(fallbackGiftData.duration, 3);
+      setCurrentDay(simulatedDay);
+      setSelectedDay(simulatedDay);
+      setMessages(generateAllMessages(simulatedDay, fallbackGiftData));
+      scheduleCelebration();
+    };
+
+    fetchGiftData();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [
+    normalizedInitialMessageStrings,
+    derivedGiftData,
+    giftData,
+    generateAllMessages,
+    scheduleCelebration,
+    resolvedGiftId,
+  ]);
+
+  // Auto-play music when component mounts
+  useEffect(() => {
+    if (giftData?.music) {
+      // Simulate playing music after a short delay
+      setTimeout(() => {
+        setIsPlaying(true);
+      }, 2000);
+    }
+  }, [giftData]);
 
   const handlePlayPause = () => {
     setIsPlaying(!isPlaying);
@@ -147,7 +375,7 @@ export default function GiftViewPage({ giftId, onBack }: GiftViewPageProps) {
             }}
             transition={{ duration: 2, repeat: Infinity }}
           >
-            <img src={flowerLogo} alt="Bloomy" className="w-20 h-20 object-contain" />
+            <img src={flowerLogoSrc} alt="Bloomy" className="w-20 h-20 object-contain" />
           </motion.div>
           <motion.p 
             className="text-lg text-[#6B7280] font-medium"
@@ -168,34 +396,37 @@ export default function GiftViewPage({ giftId, onBack }: GiftViewPageProps) {
       
       {/* Floating Background Elements */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {[...Array(12)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute opacity-5"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-            }}
-            animate={{
-              y: [0, -30, 0],
-              rotate: [0, 180],
-              scale: [1, 1.2, 1],
-            }}
-            transition={{
-              duration: 6 + Math.random() * 4,
-              repeat: Infinity,
-              delay: Math.random() * 2,
-            }}
-          >
-            <img src={flowerLogoOutline} alt="" className="w-8 h-8 opacity-60" />
-          </motion.div>
-        ))}
+        {[...Array(12)].map((_, i) => {
+          const iconSrc = i % 3 === 0 ? whiteFlowerIconSrc : flowerLogoOutlineSrc;
+          return (
+            <motion.div
+              key={i}
+              className="absolute opacity-5"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+              }}
+              animate={{
+                y: [0, -30, 0],
+                rotate: [0, 180],
+                scale: [1, 1.2, 1],
+              }}
+              transition={{
+                duration: 6 + Math.random() * 4,
+                repeat: Infinity,
+                delay: Math.random() * 2,
+              }}
+            >
+              <img src={iconSrc} alt="" className="w-8 h-8 opacity-60" />
+            </motion.div>
+          );
+        })}
       </div>
 
       {/* Header */}
       <header className="px-8 py-6 flex items-center justify-between relative z-10">
         <div className="flex items-center gap-2">
-          <img src={flowerLogoOutline} alt="Bloomy" className="w-6 h-6 object-contain" />
+          <img src={flowerLogoOutlineSrc} alt="Bloomy" className="w-6 h-6 object-contain" />
           <span className="text-2xl font-semibold text-[#111827]">Bloomy</span>
         </div>
         
@@ -267,22 +498,29 @@ export default function GiftViewPage({ giftId, onBack }: GiftViewPageProps) {
                 className="relative bg-gradient-to-br from-[#FAF8F6] to-[#F0F0F0] rounded-3xl overflow-hidden mb-8"
                 style={{ aspectRatio: '1350/1080' }}
                 initial={{ scale: 0.8, opacity: 0, y: 30 }}
-                animate={{ 
-                  scale: 1, 
+                animate={{
+                  scale: 1,
                   opacity: 1,
                   y: 0
                 }}
-                transition={{ 
-                  duration: 1.2, 
+                transition={{
+                  duration: 1.2,
                   delay: 0.4
                 }}
               >
+                <div className="absolute inset-0">
+                  <img
+                    src={flowerLogoGradientSrc}
+                    alt=""
+                    className="absolute -top-8 -right-8 w-40 h-40 opacity-30 blur-sm rotate-12"
+                  />
+                </div>
                 {/* Subtle border effect */}
                 <div className="absolute inset-0 bg-gradient-to-r from-[#FF7AA2]/10 via-[#FF9E66]/5 to-[#FF7AA2]/10 rounded-3xl p-[1px]">
                   <div className="w-full h-full bg-gradient-to-br from-[#FAF8F6] to-[#F0F0F0] rounded-[calc(1.5rem-1px)]">
                     <ImageWithFallback
-                      src={giftData.flower.image}
-                      alt={giftData.flower.name}
+                      src={giftData?.flower?.image ?? exampleImageSrc}
+                      alt={giftData?.flower?.name ?? 'Bloomy Flower'}
                       className="w-full h-full object-cover rounded-[calc(1.5rem-1px)]"
                     />
                   </div>
@@ -359,7 +597,7 @@ export default function GiftViewPage({ giftId, onBack }: GiftViewPageProps) {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.6 }}
                     >
-                      <img src={flowerLogoOutline} alt="" className="w-6 h-6 object-contain" />
+                      <img src={flowerLogoOutlineSrc} alt="" className="w-6 h-6 object-contain" />
                       <p className="text-[#6B7280] text-sm">With love from {giftData.senderName}</p>
                     </motion.div>
                   </div>
@@ -510,7 +748,7 @@ export default function GiftViewPage({ giftId, onBack }: GiftViewPageProps) {
       <footer className="px-8 py-8 bg-white mt-16">
         <div className="max-w-4xl mx-auto text-center">
           <div className="flex items-center justify-center gap-2">
-            <img src={flowerLogoOutline} alt="Bloomy" className="w-5 h-5 object-contain" />
+            <img src={flowerLogoOutlineSrc} alt="Bloomy" className="w-5 h-5 object-contain" />
             <span className="text-[#6B7280] font-medium">Bloomy</span>
           </div>
         </div>
