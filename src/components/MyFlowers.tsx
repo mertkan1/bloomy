@@ -1,3 +1,4 @@
+"use client";
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Button } from './ui/button';
@@ -5,6 +6,7 @@ import { Card } from './ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Badge } from './ui/badge';
 import { Avatar } from './ui/avatar';
+import Image from 'next/image';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { Heart, Eye, QrCode, Send, Settings, LogOut, Calendar, Gift, Loader2, User } from 'lucide-react';
 import { toast } from 'sonner';
@@ -200,7 +202,7 @@ export default function MyFlowers({ userEmail, onLogout, onViewGift, onHome, onS
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-gradient-to-r from-[#FF7AA2] to-[#FF9E66] rounded-lg flex items-center justify-center">
-              <img src={flowerLogoOutline} alt="Bloomy" className="w-5 h-5 object-contain brightness-0 invert" />
+              <Image src={flowerLogoOutline} alt="Bloomy" className="w-5 h-5 object-contain brightness-0 invert" />
             </div>
             <span className="text-2xl font-bold text-[#111827]">Bloomy</span>
           </div>

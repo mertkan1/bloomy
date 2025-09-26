@@ -1,8 +1,10 @@
+"use client";
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
 import { ImageWithFallback } from './figma/ImageWithFallback';
+import Image from 'next/image';
 import { Heart, Calendar, ArrowLeft, ChevronLeft, ChevronRight, History, Gift, Play, Pause } from 'lucide-react';
 import ConfettiEffect from './ConfettiEffect';
 import exampleImage from '@/assets/8ad8897c666027e964120ebef5888d4b6b9585c7.png';
@@ -146,7 +148,7 @@ export default function GiftViewPage({ giftId, onBack }: GiftViewPageProps) {
             }}
             transition={{ duration: 2, repeat: Infinity }}
           >
-            <img src={flowerLogo} alt="Bloomy" className="w-20 h-20 object-contain" />
+            <Image src={flowerLogo} alt="Bloomy" className="w-20 h-20 object-contain" />
           </motion.div>
           <motion.p 
             className="text-lg text-[#6B7280] font-medium"
@@ -186,7 +188,7 @@ export default function GiftViewPage({ giftId, onBack }: GiftViewPageProps) {
               delay: Math.random() * 2,
             }}
           >
-            <img src={flowerLogoOutline} alt="" className="w-8 h-8 opacity-60" />
+            <Image src={flowerLogoOutline} alt="" className="w-8 h-8 opacity-60" />
           </motion.div>
         ))}
       </div>
@@ -194,7 +196,7 @@ export default function GiftViewPage({ giftId, onBack }: GiftViewPageProps) {
       {/* Header */}
       <header className="px-8 py-6 flex items-center justify-between relative z-10">
         <div className="flex items-center gap-2">
-          <img src={flowerLogoOutline} alt="Bloomy" className="w-6 h-6 object-contain" />
+          <Image src={flowerLogoOutline} alt="Bloomy" className="w-6 h-6 object-contain" />
           <span className="text-2xl font-semibold text-[#111827]">Bloomy</span>
         </div>
         
@@ -358,7 +360,7 @@ export default function GiftViewPage({ giftId, onBack }: GiftViewPageProps) {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.6 }}
                     >
-                      <img src={flowerLogoOutline} alt="" className="w-6 h-6 object-contain" />
+                      <Image src={flowerLogoOutline} alt="" className="w-6 h-6 object-contain" />
                       <p className="text-[#6B7280] text-sm">With love from {giftData.senderName}</p>
                     </motion.div>
                   </div>
@@ -509,7 +511,7 @@ export default function GiftViewPage({ giftId, onBack }: GiftViewPageProps) {
       <footer className="px-8 py-8 bg-white mt-16">
         <div className="max-w-4xl mx-auto text-center">
           <div className="flex items-center justify-center gap-2">
-            <img src={flowerLogoOutline} alt="Bloomy" className="w-5 h-5 object-contain" />
+            <Image src={flowerLogoOutline} alt="Bloomy" className="w-5 h-5 object-contain" />
             <span className="text-[#6B7280] font-medium">Bloomy</span>
           </div>
         </div>

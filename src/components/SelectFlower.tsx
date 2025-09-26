@@ -110,8 +110,8 @@ export default function SelectFlower({ onBack, onSelectFlower }: SelectFlowerPro
   ];
 
   const currentFlowers = flowers[activeCategory];
-  const limitedFlower = currentFlowers.find(f => f.isLimited) || currentFlowers[0];
-  const standardFlowers = currentFlowers.filter(f => !f.isLimited);
+  const limitedFlower = currentFlowers.find((f: any) => (f as any).isLimited) || currentFlowers[0];
+  const standardFlowers = currentFlowers.filter((f: any) => !(f as any).isLimited);
   const currentStandardFlower = standardFlowers[currentStandardIndex % standardFlowers.length];
 
   // Auto-rotate standard flowers every 10 seconds
@@ -219,9 +219,9 @@ export default function SelectFlower({ onBack, onSelectFlower }: SelectFlowerPro
                   {/* Bottom Info */}
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 text-white">
                     <h3 className="text-2xl font-bold mb-1">{limitedFlower.name}</h3>
-                    {limitedFlower.stock && limitedFlower.totalStock && (
+                    {(limitedFlower as any).stock && (limitedFlower as any).totalStock && (
                       <p className="text-sm mb-2 opacity-90">
-                        {limitedFlower.stock} / {limitedFlower.totalStock} LEFT
+                        {(limitedFlower as any).stock} / {(limitedFlower as any).totalStock} LEFT
                       </p>
                     )}
                     <div className="flex items-center justify-between">

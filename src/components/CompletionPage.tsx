@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Button } from './ui/button';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { Heart, Sparkles, Facebook, Twitter, MessageCircle, Gift, Info } from 'lucide-react';
-import exampleImage from 'figma:asset/8ad8897c666027e964120ebef5888d4b6b9585c7.png';
+import exampleImage from '@/assets/8ad8897c666027e964120ebef5888d4b6b9585c7.png';
 
 interface CompletionPageProps {
   giftData: any;

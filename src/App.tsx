@@ -21,9 +21,10 @@ import { Heart, Sparkles, MessageCircle, Share2, Globe, ChevronDown, User, LogIn
 import { createClient } from '@supabase/supabase-js';
 import { projectId, publicAnonKey } from './utils/supabase/info';
 import { toast } from 'sonner';
-import flowerLogo from 'figma:asset/b2dfc7a842334267c53e217f862d55a3f4d30a90.png';
-import flowerLogoGradient from 'figma:asset/47650059587febef5d2ffcbe8595697331a8c807.png';
-import flowerLogoOutline from 'figma:asset/7f2e338b7c49e282790a86d9a96a4f9a2abdd1f2.png';
+import flowerLogo from '@/assets/b2dfc7a842334267c53e217f862d55a3f4d30a90.png';
+import flowerLogoGradient from '@/assets/47650059587febef5d2ffcbe8595697331a8c807.png';
+import flowerLogoOutline from '@/assets/7f2e338b7c49e282790a86d9a96a4f9a2abdd1f2.png';
+import Image from 'next/image';
 
 type Page = 'home' | 'select-flower' | 'craft-gift' | 'gift-growing' | 'music-selection' | 'completion' | 'preview' | 'purchase' | 'success' | 'message-review' | 'gift-view' | 'my-flowers';
 
@@ -142,7 +143,7 @@ export default function App() {
 
   const handleMusicSelect = (musicData: any) => {
     // Add music selection to gift data
-    setGiftData(prev => ({
+    setGiftData((prev: any) => ({
       ...prev,
       music: musicData
     }));
@@ -301,7 +302,7 @@ export default function App() {
       {/* Header */}
       <header className="px-8 py-6 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <img src={flowerLogoOutline} alt="Bloomy" className="w-6 h-6 object-contain" />
+          <Image src={flowerLogoOutline} alt="Bloomy" width={24} height={24} />
           <span className="text-2xl font-semibold text-[#111827]">Bloomy</span>
         </div>
         
@@ -469,7 +470,7 @@ export default function App() {
           <div className="grid md:grid-cols-3 gap-12">
             <div className="text-center space-y-6">
               <div className="w-16 h-16 bg-gradient-to-r from-[#FF7AA2] to-[#FF9E66] rounded-full flex items-center justify-center mx-auto">
-                <img src={flowerLogoOutline} alt="" className="w-8 h-8 object-contain brightness-0 invert" />
+                <Image src={flowerLogoOutline} alt="" width={32} height={32} className="w-8 h-8 object-contain brightness-0 invert" />
               </div>
               <h3 className="text-xl font-semibold text-[#111827]">Visit a Flower</h3>
               <p className="text-[#6B7280]">
@@ -624,7 +625,7 @@ export default function App() {
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between gap-8">
             <div className="flex items-center gap-2">
-              <img src={flowerLogoOutline} alt="Bloomy" className="w-6 h-6 object-contain" />
+              <Image src={flowerLogoOutline} alt="Bloomy" width={24} height={24} />
               <span className="text-2xl font-semibold text-white">Bloomy</span>
             </div>
             

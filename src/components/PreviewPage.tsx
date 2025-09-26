@@ -1,10 +1,11 @@
+"use client";
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Button } from './ui/button';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { Heart, ArrowLeft, Sparkles, Calendar, Crown, Timer, Lock, Eye } from 'lucide-react';
 import ConfettiEffect from './ConfettiEffect';
-import exampleImage from 'figma:asset/8ad8897c666027e964120ebef5888d4b6b9585c7.png';
+import exampleImage from '@/assets/8ad8897c666027e964120ebef5888d4b6b9585c7.png';
 
 interface PreviewPageProps {
   giftData: any;

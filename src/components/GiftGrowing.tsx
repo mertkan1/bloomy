@@ -1,6 +1,7 @@
+"use client";
 import { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
-import exampleImage from 'figma:asset/3b9a464b502f633d9892beda9bae7d77744045aa.png';
+import exampleImage from '@/assets/3b9a464b502f633d9892beda9bae7d77744045aa.png';
 
 interface GiftGrowingProps {
   onComplete: () => void;

@@ -5,6 +5,5 @@
 /* Vite stil dosyasindaki degiskenleri korumak icin mevcut src/index.css uzerinden import edilebilir.
    Tasima surecinde ikiz stilleri azaltmak adina minimal global layer aciyoruz. */
 
-@import '../src/index.css';
 
 
