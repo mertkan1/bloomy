@@ -6,23 +6,7 @@ export default function HomePage() {
   const updatedAt = new Date().toLocaleString('tr-TR', { timeZone: 'Europe/Istanbul' })
   return (
     <main className="min-h-screen bg-white">
-      <header className="px-8 py-6 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Image src={flowerLogoOutline} alt="Bloomy" width={24} height={24} />
-          <span className="text-2xl font-semibold text-[#111827]">Bloomy</span>
-        </div>
-        <nav className="hidden md:flex items-center gap-8">
-          <a href="/" className="text-[#6B7280] hover:text-[#111827] transition-colors">Home</a>
-          <a href="/(flow)/select-flower" className="text-[#6B7280] hover:text-[#111827] transition-colors">Send a Gift</a>
-          <a href="#how" className="text-[#6B7280] hover:text-[#111827] transition-colors">How it works</a>
-        </nav>
-        <a
-          href="/(flow)/select-flower"
-          className="bg-gradient-to-r from-[#FF7AA2] to-[#FF9E66] text-white rounded-2xl px-6 py-2 hover:shadow-lg transition-all duration-300"
-        >
-          Start Creating
-        </a>
-      </header>
+      {/* Header layout tarafından render ediliyor */}
 
       <section className="px-8 py-16 md:py-24">
         <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
