@@ -1,7 +1,9 @@
 import Image from 'next/image'
 import flowerLogoOutline from '@/assets/7f2e338b7c49e282790a86d9a96a4f9a2abdd1f2.png'
+import pkg from '../package.json'
 
 export default function HomePage() {
+  const updatedAt = new Date().toLocaleString('tr-TR', { timeZone: 'Europe/Istanbul' })
   return (
     <main className="min-h-screen bg-white">
       <header className="px-8 py-6 flex items-center justify-between">
@@ -86,6 +88,11 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Version/Update time */}
+      <div className="px-8 py-6 text-center text-[#6B7280] text-sm border-t border-[#E5E7EB]">
+        v{(pkg as any)?.version || '0.0.0'} · Güncellendi: {updatedAt}
+      </div>
     </main>
   )
 }
